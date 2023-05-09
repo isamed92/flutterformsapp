@@ -10,4 +10,8 @@ final appRouter = GoRouter(routes: [
     path: '/cubits',
     builder: (context, state) => const CubicCounterScreen(),
   ),
+  GoRoute(
+    path: '/bloc',
+    builder: (context, state) => const BlocCounterScreen(),
+  ),
 ]);
