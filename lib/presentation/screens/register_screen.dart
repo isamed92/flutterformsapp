@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:forms_app/presentation/blocs/register_cubic/register_cubit.dart';
 import 'package:forms_app/presentation/widgets/widgets.dart';
 
 class RegisterScreen extends StatelessWidget {
@@ -18,21 +20,24 @@ class _RegisterView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SafeArea(
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 50),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              FlutterLogo(
-                size: 100,
-              ),
-              _RegisterForm(),
-              SizedBox(
-                height: 20,
-              ),
-            ],
+    return BlocProvider(
+      create: (context) => RegisterCubit(),
+      child: const SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 50),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                FlutterLogo(
+                  size: 100,
+                ),
+                _RegisterForm(),
+                SizedBox(
+                  height: 20,
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -50,12 +55,11 @@ class _RegisterForm extends StatefulWidget {
 class _RegisterFormState extends State<_RegisterForm> {
   final _formKey = GlobalKey<FormState>();
 
-  String email = '';
-  String username = '';
-  String password = '';
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+
+    final registerCubit = context.watch<RegisterCubit>();
     return Form(
         key: _formKey,
         child: Padding(
@@ -64,7 +68,10 @@ class _RegisterFormState extends State<_RegisterForm> {
             children: [
               CustomTextFormField(
                 label: 'Nombre de usuario',
-                onChange: (value) => username = value,
+                onChange: (value) {
+                  registerCubit.usernameChanged(value);
+                  _formKey.currentState?.validate();
+                },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'El nombre de usuario es requerido';
@@ -83,7 +90,10 @@ class _RegisterFormState extends State<_RegisterForm> {
               ),
               CustomTextFormField(
                 label: 'correo electronico',
-                onChange: (value) => email = value,
+                onChange: (value) {
+                  registerCubit.emailChanged(value);
+                  _formKey.currentState?.validate();
+                },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'El nombre de usuario es requerido';
@@ -108,7 +118,10 @@ class _RegisterFormState extends State<_RegisterForm> {
               CustomTextFormField(
                 label: 'contraseña',
                 obscureText: true,
-                onChange: (value) => password = value,
+                onChange: (value) {
+                  registerCubit.passwordChanged(value);
+                  _formKey.currentState?.validate();
+                },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'El nombre de usuario es requerido';
@@ -135,9 +148,7 @@ class _RegisterFormState extends State<_RegisterForm> {
                 onPressed: () {
                   final isValid = _formKey.currentState!.validate();
                   if (!isValid) return;
-                  print('email: $email');
-                  print('email: $username');
-                  print('email: $password');
+                  // print('email: $email, password: $password, username: $username');
                 },
                 label: Text('Crear Usuario'.toUpperCase()),
                 icon: const Icon(Icons.save),
