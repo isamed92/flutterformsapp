@@ -19,4 +19,11 @@ class Username extends FormzInput<String, UsernameError> {
 
     return null;
   }
+
+  String? get errorMessage {
+    if (isValid || isPure) return null;
+    if (displayError == UsernameError.empty) return 'el campo es requerido';
+    if (displayError == UsernameError.length) return 'minimo 6 caracteres';
+    return null;
+  }
 }

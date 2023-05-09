@@ -55,6 +55,7 @@ class _RegisterForm extends StatelessWidget {
     final registerCubit = context.watch<RegisterCubit>();
     final username = registerCubit.state.username;
     final password = registerCubit.state.password;
+    final email = registerCubit.state.email;
 
     return Form(
         child: Padding(
@@ -64,35 +65,15 @@ class _RegisterForm extends StatelessWidget {
           CustomTextFormField(
             label: 'Nombre de usuario',
             onChange: registerCubit.usernameChanged,
-            errorMessage: username.isValid || username.isPure
-                ? null
-                : 'usuario no valido',
+            errorMessage: username.errorMessage,
           ),
           const SizedBox(
             height: 10,
           ),
           CustomTextFormField(
             label: 'correo electronico',
-            onChange: (value) {
-              registerCubit.emailChanged(value);
-            },
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'El nombre de usuario es requerido';
-              }
-              if (value.trim().isEmpty) {
-                return 'El nombre de usuario es requerido';
-              }
-              final emailRegExp = RegExp(
-                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-              );
-
-              if (!emailRegExp.hasMatch(value)) {
-                return 'error de formato en el correo';
-              }
-
-              return null;
-            },
+            onChange: registerCubit.emailChanged,
+            errorMessage: email.errorMessage,
           ),
           const SizedBox(
             height: 10,
@@ -100,21 +81,8 @@ class _RegisterForm extends StatelessWidget {
           CustomTextFormField(
             label: 'contraseña',
             obscureText: true,
-            onChange: (value) {
-              registerCubit.passwordChanged(value);
-            },
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'El nombre de usuario es requerido';
-              }
-              if (value.trim().isEmpty) {
-                return 'El nombre de usuario es requerido';
-              }
-              if (value.length < 6) {
-                return 'El nombre de usuario debe tener al menos 6 caracteres';
-              }
-              return null;
-            },
+            onChange: registerCubit.passwordChanged,
+            errorMessage: password.errorMessage,
           ),
           const SizedBox(
             height: 20,
