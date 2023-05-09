@@ -45,116 +45,95 @@ class _RegisterView extends StatelessWidget {
   }
 }
 
-class _RegisterForm extends StatefulWidget {
+class _RegisterForm extends StatelessWidget {
   const _RegisterForm();
-
-  @override
-  State<_RegisterForm> createState() => _RegisterFormState();
-}
-
-class _RegisterFormState extends State<_RegisterForm> {
-  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
     final registerCubit = context.watch<RegisterCubit>();
+    final username = registerCubit.state.username;
+    final password = registerCubit.state.password;
+
     return Form(
-        key: _formKey,
         child: Padding(
-          padding: const EdgeInsets.only(top: 50),
-          child: Column(
-            children: [
-              CustomTextFormField(
-                label: 'Nombre de usuario',
-                onChange: (value) {
-                  registerCubit.usernameChanged(value);
-                  _formKey.currentState?.validate();
-                },
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'El nombre de usuario es requerido';
-                  }
-                  if (value.trim().isEmpty) {
-                    return 'El nombre de usuario es requerido';
-                  }
-                  if (value.length < 6) {
-                    return 'El nombre de usuario debe tener al menos 6 caracteres';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              CustomTextFormField(
-                label: 'correo electronico',
-                onChange: (value) {
-                  registerCubit.emailChanged(value);
-                  _formKey.currentState?.validate();
-                },
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'El nombre de usuario es requerido';
-                  }
-                  if (value.trim().isEmpty) {
-                    return 'El nombre de usuario es requerido';
-                  }
-                  final emailRegExp = RegExp(
-                    r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                  );
-
-                  if (!emailRegExp.hasMatch(value)) {
-                    return 'error de formato en el correo';
-                  }
-
-                  return null;
-                },
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              CustomTextFormField(
-                label: 'contraseña',
-                obscureText: true,
-                onChange: (value) {
-                  registerCubit.passwordChanged(value);
-                  _formKey.currentState?.validate();
-                },
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'El nombre de usuario es requerido';
-                  }
-                  if (value.trim().isEmpty) {
-                    return 'El nombre de usuario es requerido';
-                  }
-                  if (value.length < 6) {
-                    return 'El nombre de usuario debe tener al menos 6 caracteres';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              FilledButton.tonalIcon(
-                style: ButtonStyle(
-                    elevation: MaterialStateProperty.all(2),
-                    textStyle: MaterialStateProperty.all(
-                        const TextStyle(fontSize: 20)),
-                    minimumSize:
-                        MaterialStateProperty.all(Size(size.width, 55))),
-                onPressed: () {
-                  final isValid = _formKey.currentState!.validate();
-                  if (!isValid) return;
-                  // print('email: $email, password: $password, username: $username');
-                },
-                label: Text('Crear Usuario'.toUpperCase()),
-                icon: const Icon(Icons.save),
-              ),
-            ],
+      padding: const EdgeInsets.only(top: 50),
+      child: Column(
+        children: [
+          CustomTextFormField(
+            label: 'Nombre de usuario',
+            onChange: registerCubit.usernameChanged,
+            errorMessage: username.isValid || username.isPure
+                ? null
+                : 'usuario no valido',
           ),
-        ));
+          const SizedBox(
+            height: 10,
+          ),
+          CustomTextFormField(
+            label: 'correo electronico',
+            onChange: (value) {
+              registerCubit.emailChanged(value);
+            },
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'El nombre de usuario es requerido';
+              }
+              if (value.trim().isEmpty) {
+                return 'El nombre de usuario es requerido';
+              }
+              final emailRegExp = RegExp(
+                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+              );
+
+              if (!emailRegExp.hasMatch(value)) {
+                return 'error de formato en el correo';
+              }
+
+              return null;
+            },
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          CustomTextFormField(
+            label: 'contraseña',
+            obscureText: true,
+            onChange: (value) {
+              registerCubit.passwordChanged(value);
+            },
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'El nombre de usuario es requerido';
+              }
+              if (value.trim().isEmpty) {
+                return 'El nombre de usuario es requerido';
+              }
+              if (value.length < 6) {
+                return 'El nombre de usuario debe tener al menos 6 caracteres';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          FilledButton.tonalIcon(
+            style: ButtonStyle(
+                elevation: MaterialStateProperty.all(2),
+                textStyle:
+                    MaterialStateProperty.all(const TextStyle(fontSize: 20)),
+                minimumSize: MaterialStateProperty.all(Size(size.width, 55))),
+            onPressed: () {
+              registerCubit.onSubmit();
+              // print('email: $email, password: $password, username: $username');
+            },
+            label: Text('Crear Usuario'.toUpperCase()),
+            icon: const Icon(Icons.save),
+          ),
+        ],
+      ),
+    ));
   }
 }
